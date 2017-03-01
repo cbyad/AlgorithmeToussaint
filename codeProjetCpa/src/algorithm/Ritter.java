@@ -1,4 +1,4 @@
-package algorithm.ritter;
+package algorithm;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -11,19 +11,16 @@ public class Ritter {
 
 		ArrayList<Point> newPoints =  new ArrayList<Point>(points);
 
-
 		Point dummy = newPoints.get(0);
 		Point Pmax = dummy;
 		Point Qmax =Pmax;
+		
 		for (Point p : newPoints) {
-
 			if(dummy.distance(p)>dummy.distance(Pmax))  Pmax=p ;	  
 		}
 
 		for (Point q : newPoints) {
-
 			if(Pmax.distance(q)>Pmax.distance(Qmax))  Qmax=q ;
-
 		}
 
 		Point C = new Point((Pmax.x+Qmax.x)/2,(Pmax.y+Qmax.y)/2);
@@ -40,10 +37,8 @@ public class Ritter {
 			}
 			else {
 
-
-				double cprimeX =(  ((C.distance(S)+ CERCLE.getRadius())/2)* C.x  + (C.distance(S)-((C.distance(S)+ CERCLE.getRadius())/2))*S.x )/C.distance(S);
-				double cprimeY =(  ((C.distance(S)+ CERCLE.getRadius())/2)* C.y  + (C.distance(S)-((C.distance(S)+ CERCLE.getRadius())/2))*S.y )/C.distance(S);
-
+				double cprimeX =(((C.distance(S)+ CERCLE.getRadius())/2)* C.x  + (C.distance(S)-((C.distance(S)+ CERCLE.getRadius())/2))*S.x )/C.distance(S);
+				double cprimeY =(((C.distance(S)+ CERCLE.getRadius())/2)* C.y  + (C.distance(S)-((C.distance(S)+ CERCLE.getRadius())/2))*S.y )/C.distance(S);
 
 				Point  Cprime = new Point((int)cprimeX,(int)cprimeY) ;
 

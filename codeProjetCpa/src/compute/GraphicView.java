@@ -3,15 +3,20 @@ package compute;
 import java.awt.Point;
 import java.util.ArrayList;
 
-
-import algorithm.ritter.Ritter;
+import algorithm.Jarvis;
+import algorithm.Ritter;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.StrokeLineCap;
 import javafx.stage.Stage;
+import tools.LoadInstance;
+import tools.MathTools;
 
 public class GraphicView extends Application {
 
@@ -19,29 +24,57 @@ public class GraphicView extends Application {
 	public void start(Stage primaryStage) {
 		
 		Group root = new Group();
-		
-		ArrayList<Point> points = new ArrayList<Point>();
-		
-		
-		points.add(new Point(44,77));
-		points.add(new Point(56,66));
-		points.add(new Point(56,78));
-		points.add(new Point(90,65));
-		points.add(new Point(3,55));
-		points.add(new Point(40,9));
-		
-		
+		//"samples/test-1040.points" ? peut etre probleme de conversion de type vers double 
+		ArrayList<Point> points = LoadInstance.readFile("samples/test-1078.points");
+				
 		Circle circle =new Ritter().calculCercleMinRitter(points);// calcul ritter
 		
+		//ArrayList<Point> pointsJarvis = new Jarvis().enveloppeConvexeJarvis(points);
+		ArrayList<Point> pointsJarvis = new Jarvis().tme2exercice6(points);
 		circle.setFill(Color.CORNFLOWERBLUE);
+		circle.setStroke(Color.BLACK);
+		circle.setStrokeWidth(2);
+		
+		
+		Polygon poly  = new Polygon();
+		
+		
+		
+		poly.setFill(Color.BLANCHEDALMOND);
+		poly.setStroke(Color.WHITE);
+		//poly.setStrokeLineCap(StrokeLineCap.SQUARE);
+		poly.setStrokeWidth(1);
+		
+		pointsJarvis.forEach(e ->{poly.getPoints().add((double) e.x) ;poly.getPoints().add((double) e.y); });
+		
+		System.out.println(poly.getPoints().size());
+		
+	
 		root.getChildren().add(circle);
+		root.getChildren().add(poly);
 		root.getChildren().addAll(putPointOnScreen(points));
+		Label circleArea = new Label("Area circle= "+MathTools.circleArea(circle.getRadius()));
+		Label polyArea = new Label("Area polygon= "+MathTools.polygonArea(pointsJarvis));
+		
+		Label qualite = new Label("Qualite = "+MathTools.quality(pointsJarvis, circle));
+		
+		
+		
+		polyArea.setTranslateY(20);
+		qualite.setTranslateY(40);
+		
+		circleArea.setTextFill(Color.WHITE);
+		polyArea.setTextFill(Color.WHITE);
+		qualite.setTextFill(Color.WHITE);
+		root.getChildren().add(circleArea);
+		root.getChildren().add(polyArea);
+		root.getChildren().add(qualite);
 		
 		Scene scene = new Scene(root);
 		scene.setFill(Color.DARKSLATEGRAY);
 		primaryStage.setTitle("---Algorithm Ritter---");
 		primaryStage.setScene(scene);
-		primaryStage.setHeight(700);
+		primaryStage.setHeight(600);
 		primaryStage.setWidth(800);
 		primaryStage.show();
 		primaryStage.setOnCloseRequest(e -> Platform.exit());
@@ -49,9 +82,9 @@ public class GraphicView extends Application {
 	
 	
 	public static void main(String[] args) {
+		
 		launch(args);
 	}
-	
 	
 	/*
 	 * 
@@ -61,23 +94,10 @@ public class GraphicView extends Application {
 		ArrayList<Circle> result = new ArrayList<Circle>();
 		
 		for (Point p : points) {
-			result.add(new Circle(p.x, p.y,4,Color.RED));
+			result.add(new Circle(p.x, p.y,2,Color.RED));
 		}
 		return result ;
 		
 	}
-	
-	
-	/*
-	 * parse un fichier texte , recupere les coordoonees de point et contruit une instante de point pour Ritter
-	 */
-	public ArrayList<Point> readFileBuildInstance(String fileName) {
-		return null;
-	}
-	
-	
-	
-	
-	
-	
+
 }

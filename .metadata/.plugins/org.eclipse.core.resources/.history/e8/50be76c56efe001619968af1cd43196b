@@ -1,0 +1,52 @@
+package tools;
+
+import java.awt.Point;
+import java.util.ArrayList;
+
+public class MathTools {
+
+
+	public static double circleArea(double radius){
+		return Math.PI*(radius)*(radius);
+	}
+
+
+
+	public static double calculAngle(Point a , Point b , Point c , Point d){
+		if (a.distance(b)*c.distance(d)==0)return Double.MAX_VALUE;
+		return Math.acos(((b.x-a.x)*(d.x-c.x)+(b.y-a.y)*(d.y-c.y))/(double)(a.distance(b)*c.distance(d) ));
+
+	}
+
+
+
+	/*
+	 * Produit vectoriel (pq,pr)
+	 */
+	public static double crossProduct(Point p , Point q , Point r){ 
+		return (q.getX()-p.getX())*(r.getY()-p.getY())-(q.getY()-p.getY())*(r.getX()-p.getX());
+	}
+
+
+	public static Point abscisseMin(ArrayList<Point> points){
+		Point p=points.get(0);
+		for (Point r : points) {
+			if(r.getX()<p.getX()) p = r ;
+		}
+		return p;
+	}
+
+	public static double polygonArea(ArrayList<Point> points){
+		
+		double area =0;
+		int j = points.size()-1 ;
+		
+		for (int i = 0; i < points.size(); i++) {
+			area += (points.get(j).x + points.get(i).x )*(points.get(j).y - points.get(i).y);
+			j=i ;
+		}
+		return area/2 ;
+	}
+	
+
+}

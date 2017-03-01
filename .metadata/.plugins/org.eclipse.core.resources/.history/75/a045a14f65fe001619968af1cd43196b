@@ -1,0 +1,84 @@
+package algorithm;
+
+import java.awt.Point;
+import java.util.ArrayList;
+
+/**
+ * 
+ * @author cb_mac
+ *Implementation de l'algo de Jarvis pour le calcul de l'enveloppe convexe
+ */
+public class Jarvis {
+
+	 
+	 
+	 public ArrayList<Point> enveloppeConvexeJarvis(ArrayList<Point> points){
+		 
+		 if (points.size()<3) {
+			 return null;
+		 }
+		 
+		 ArrayList<Point> enveloppe = new ArrayList<Point>();
+		 Point p = abscisseMin(points);
+		 Point pPrime = new Point(p);
+		 
+		 for (Point q : points) {
+			 if (p.equals(q)) continue;
+			 boolean coteBleu=true;
+					
+			for (Point x : points) {
+				if(crossProduct(p, q, x)<0) coteBleu=false;
+			}
+					
+			if(coteBleu==true) { //On a [PQ] sur l'enveloppe convexe
+				
+				boolean bolBoucle = true;
+				enveloppe.add(p);
+				while(bolBoucle){
+					
+					Point r = points.get(0);
+					double angleMin =  CalculAngle(p,q,q,r); //(pq,qr)
+							
+					for (Point rmin : points) {
+						if(!rmin.equals(q)&&!rmin.equals(p)){
+							if( CalculAngle(p,q,q,rmin)<angleMin) {r = rmin;angleMin=CalculAngle(p,q,q,rmin);}
+						}
+					}//On a trouvé R
+							
+					if(r.equals(pPrime)) bolBoucle = false;
+					enveloppe.add(q);
+					enveloppe.add(r);
+					p=(Point)q.clone();
+					q=(Point)r.clone();
+				}
+				break;
+			}
+		}
+		 return enveloppe ; 
+	 }
+	 
+	 
+	 public double CalculAngle(Point a , Point b , Point c , Point d){
+		 if (a.distance(b)*c.distance(d)==0)return Double.MAX_VALUE;
+		 
+		 return Math.acos(((b.x-a.x)*(d.x-c.x)+(b.y-a.y)*(d.y-c.y))/(double)(a.distance(b)*c.distance(d) ));
+		 
+	 }
+	 
+	 /*
+	  * Produit vectoriel (pq,pr)
+	  */
+	 public double crossProduct(Point p , Point q , Point r){ 
+		 return (q.getX()-p.getX())*(r.getY()-p.getY())-(q.getY()-p.getY())*(r.getX()-p.getX());
+	 }
+	 
+	 
+	 public Point abscisseMin(ArrayList<Point> points){
+		 Point p=points.get(0);
+		 for (Point r : points) {
+			 if(r.getX()<p.getX()) p = r ;
+		 }
+		 return p;
+	 }
+	 
+}
