@@ -1,0 +1,64 @@
+package algorithm;
+
+import java.awt.Point;
+import java.awt.geom.Line2D;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+
+public class Toussaint {
+
+	
+	public  ArrayList<Line>  toussaint (ArrayList<Point> points ){
+		
+		ArrayList<Point> enlevoppe = Jarvis.tme2exercice6(points);
+		
+		ArrayList<Line> line = Jarvis.calculPairesAntipodales(enlevoppe);
+		
+		//return Jarvis.calculPairesAntipodales(enlevoppe);
+		
+		
+		
+		
+	
+		
+	}
+	
+	
+	
+	
+	public 	Rectangle  getRectangleMin (Point p1 ,Point p2 , ArrayList<Point> enveloppe){
+		
+		Point p1Suiv =enveloppe.get(enveloppe.indexOf(p1)%enveloppe.size());
+		
+		
+		int a = (p1Suiv.y-p1.y)/(p1Suiv.x-p1.x);
+		
+		int b = p1.y- (a*p1.x);
+		
+		
+		
+	
+		
+		
+	}
+	
+	public ArrayList<Point> pointsAntiPodalCommun(Point p1 , ArrayList<Line> antipodales){
+		ArrayList<Point> listePoints =  new ArrayList<>();
+//		
+//		for (Line2D l : antipodales) {
+//			l
+//			if(l.getP1().equals(p1.x)){
+//				
+//			}
+//		}
+//		
+		
+	}
+	
+	
+	
+	
+}

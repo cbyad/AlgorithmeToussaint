@@ -1,6 +1,9 @@
 package tools;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class DiskFileExplorer {
 	 
@@ -47,11 +50,35 @@ public class DiskFileExplorer {
     }  
     
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, InterruptedException {
 		
-    	DiskFileExplorer t=new DiskFileExplorer("samples",false);
-    	t.list();
-    	System.out.println(t.filecount);
+//    	DiskFileExplorer t=new DiskFileExplorer("samples",false);
+//    	t.list();
+//    	System.out.println(t.filecount);
+    	
+    	
+    	
+    	
+
+    	        String command = "pmset -g batt";
+
+    	        Process proc = Runtime.getRuntime().exec(command);
+
+    	        // Read the output
+
+    	        BufferedReader reader =  
+    	              new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+    	        String line = "";
+    	        while((line = reader.readLine()) != null) {
+    	            System.out.print(line + "\n");
+    	        }
+
+    	        proc.waitFor();   
+
+    	
+    	
+    	
 	}
     
     

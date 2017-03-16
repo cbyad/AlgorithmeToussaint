@@ -2,9 +2,11 @@ package compute;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.List;
 
 import algorithm.Jarvis;
 import algorithm.Ritter;
+import algorithm.Toussaint;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
@@ -12,8 +14,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.StrokeLineCap;
 import javafx.stage.Stage;
 import tools.LoadInstance;
 import tools.MathTools;
@@ -24,19 +26,25 @@ public class GraphicView extends Application {
 	public void start(Stage primaryStage) {
 		
 		Group root = new Group();
-		//"samples/test-1040.points" ? peut etre probleme de conversion de type vers double 
-		ArrayList<Point> points = LoadInstance.readFile("samples/test-1078.points");
+		
+		ArrayList<Point> points = LoadInstance.readFile("samples/test-1048.points");
 				
 		Circle circle =new Ritter().calculCercleMinRitter(points);// calcul ritter
 		
 		//ArrayList<Point> pointsJarvis = new Jarvis().enveloppeConvexeJarvis(points);
 		ArrayList<Point> pointsJarvis = new Jarvis().tme2exercice6(points);
 		circle.setFill(Color.CORNFLOWERBLUE);
+		//circle.setFill(Color.WHITE);
 		circle.setStroke(Color.BLACK);
 		circle.setStrokeWidth(2);
 		
 		
 		Polygon poly  = new Polygon();
+		
+		Toussaint t = new Toussaint();
+		ArrayList<Line> ligne = t.toussaint(pointsJarvis) ;//new Line(45, 55, 100, 200);
+		//System.out.println(ligne.size());
+		
 		
 		
 		
@@ -45,33 +53,38 @@ public class GraphicView extends Application {
 		//poly.setStrokeLineCap(StrokeLineCap.SQUARE);
 		poly.setStrokeWidth(1);
 		
-		pointsJarvis.forEach(e ->{poly.getPoints().add((double) e.x) ;poly.getPoints().add((double) e.y); });
+		pointsJarvis.forEach(e ->{poly.getPoints().add((double) e.x) ;
+								poly.getPoints().add((double) e.y); });
 		
 		System.out.println(poly.getPoints().size());
 		
-	
-		root.getChildren().add(circle);
+		root.getChildren().addAll();
+		
+		//root.getChildren().add(circle);
 		root.getChildren().add(poly);
+		root.getChildren().addAll( t.getRectangleMin(ligne, pointsJarvis));
+		root.getChildren().addAll(t.toussaint(pointsJarvis));
+		
 		root.getChildren().addAll(putPointOnScreen(points));
-		Label circleArea = new Label("Area circle= "+MathTools.circleArea(circle.getRadius()));
-		Label polyArea = new Label("Area polygon= "+MathTools.polygonArea(pointsJarvis));
+//		Label circleArea = new Label("Area circle= "+MathTools.circleArea(circle.getRadius()));
+//		Label polyArea = new Label("Area polygon= "+MathTools.polygonArea(pointsJarvis));
+//		
+//		Label qualite = new Label("Qualite = "+MathTools.quality(pointsJarvis, circle));
 		
-		Label qualite = new Label("Qualite = "+MathTools.quality(pointsJarvis, circle));
 		
 		
+//		polyArea.setTranslateY(20);
+//		qualite.setTranslateY(40);
 		
-		polyArea.setTranslateY(20);
-		qualite.setTranslateY(40);
-		
-		circleArea.setTextFill(Color.WHITE);
-		polyArea.setTextFill(Color.WHITE);
-		qualite.setTextFill(Color.WHITE);
-		root.getChildren().add(circleArea);
-		root.getChildren().add(polyArea);
-		root.getChildren().add(qualite);
+//		circleArea.setTextFill(Color.WHITE);
+//		polyArea.setTextFill(Color.WHITE);
+//		qualite.setTextFill(Color.WHITE);
+//		root.getChildren().add(circleArea);
+//		root.getChildren().add(polyArea);
+//		root.getChildren().add(qualite);
 		
 		Scene scene = new Scene(root);
-		scene.setFill(Color.DARKSLATEGRAY);
+		scene.setFill(Color.WHITE);
 		primaryStage.setTitle("---Algorithm Ritter---");
 		primaryStage.setScene(scene);
 		primaryStage.setHeight(600);

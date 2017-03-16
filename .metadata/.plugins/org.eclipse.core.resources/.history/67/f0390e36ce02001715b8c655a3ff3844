@@ -1,0 +1,60 @@
+package algorithm;
+
+import java.awt.Point;
+import java.util.ArrayList;
+
+import javafx.scene.shape.Circle;
+
+public class Ritter {
+
+	public Circle calculCercleMinRitter(ArrayList<Point> points) {//O(nd)
+
+		ArrayList<Point> newSetPoints =  new ArrayList<Point>(points);
+		
+		int aleatoire= (int) (Math.random()*newSetPoints.size());
+		System.out.println(aleatoire);
+		Point Pinit = newSetPoints.get(1);
+		
+		Point Pmax = Pinit;
+		Point Qmax =Pmax;
+		
+		for (Point p : newSetPoints) { //O(n)
+			if(Pinit.distance(p)>Pinit.distance(Pmax))  Pmax=p ;	  
+		}
+
+		for (Point q : newSetPoints) { //O(n)
+			if(Pmax.distance(q)>Pmax.distance(Qmax))  Qmax=q ;
+		}
+
+		Point C = new Point((Pmax.x+Qmax.x)/2,(Pmax.y+Qmax.y)/2);
+		Circle CERCLE = new Circle(C.x,C.y, (int) C.distance(Pmax)); 
+
+		newSetPoints.remove(Pmax);
+		newSetPoints.remove(Qmax);
+
+		while(!newSetPoints.isEmpty()){//O(n)
+			Point S = newSetPoints.get(0);
+
+			if (S.distance(C)< CERCLE.getRadius()) {
+				newSetPoints.remove(S);
+			}
+			else {
+
+				double cprimeX =(((C.distance(S)+ CERCLE.getRadius())/2)* C.x  + (C.distance(S)-((C.distance(S)+ CERCLE.getRadius())/2))*S.x )/C.distance(S);
+				double cprimeY =(((C.distance(S)+ CERCLE.getRadius())/2)* C.y  + (C.distance(S)-((C.distance(S)+ CERCLE.getRadius())/2))*S.y )/C.distance(S);
+
+				Point  Cprime = new Point((int)cprimeX,(int)cprimeY) ;
+
+				CERCLE = new Circle(Cprime.x,Cprime.y, (int) Cprime.distance(S)); // Circle(x,y,radius)
+				newSetPoints.remove(S);
+			}
+
+
+		}
+		return CERCLE ;
+
+
+	}
+
+
+}

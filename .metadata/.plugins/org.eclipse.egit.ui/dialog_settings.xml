@@ -22,10 +22,17 @@
 		<item value="260" key="DIALOG_Y_ORIGIN"/>
 	</section>
 	<section name="GitCommitMessageComponent">
+		<list key="/Users/cb_mac/Desktop/UPMC/SEMESTRE2/CPA/PROJET/AlgorithmeToussaint/.git">
+			<item value="false"/>
+			<item value="couassi-ble yannick-alain &lt;cbyannick@gmail.com&gt;"/>
+			<item value="Jarvis ok mais bug sur le fichier 1040 /Algo a revoir "/>
+			<item value="couassi-ble yannick-alain &lt;cbyannick@gmail.com&gt;"/>
+			<item value="72c1687d0502c16822edc0e5c6c03bb78c37680f"/>
+		</list>
 	</section>
 	<section name="org.eclipse.egit.ui.internal.staging.StagingView">
-		<item value="200,200" key="STAGING_SASH_FORM_WEIGHT"/>
+		<item value="500,500" key="STAGING_SASH_FORM_WEIGHT"/>
 		<item value="false" key="sortItemState"/>
-		<item value="200,200" key="HORIZONTAL_SASH_FORM_WEIGHT"/>
+		<item value="500,500" key="HORIZONTAL_SASH_FORM_WEIGHT"/>
 	</section>
 </section>
