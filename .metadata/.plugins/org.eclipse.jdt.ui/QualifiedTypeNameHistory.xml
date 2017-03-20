@@ -5,12 +5,19 @@
 <fullyQualifiedTypeName name="tools.DiskFileExplorer"/>
 <fullyQualifiedTypeName name="javafx.scene.effect.Effect"/>
 <fullyQualifiedTypeName name="javafx.scene.shape.Polygon"/>
-<fullyQualifiedTypeName name="javafx.scene.paint.Color"/>
-<fullyQualifiedTypeName name="algorithm.Jarvis"/>
 <fullyQualifiedTypeName name="javafx.scene.shape.StrokeLineCap"/>
 <fullyQualifiedTypeName name="javafx.scene.shape.Circle"/>
 <fullyQualifiedTypeName name="tools.MathTools"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
-<fullyQualifiedTypeName name="java.awt.Point"/>
 <fullyQualifiedTypeName name="java.lang.Math"/>
+<fullyQualifiedTypeName name="algorithm.Jarvis"/>
+<fullyQualifiedTypeName name="javafx.scene.paint.Color"/>
+<fullyQualifiedTypeName name="algorithm.Toussaint"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="javafx.scene.shape.Rectangle"/>
+<fullyQualifiedTypeName name="java.awt.geom.Line2D"/>
+<fullyQualifiedTypeName name="java.awt.Point"/>
+<fullyQualifiedTypeName name="java.lang.Double"/>
+<fullyQualifiedTypeName name="java.lang.Integer"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="javafx.scene.shape.Line"/>
 </qualifiedTypeNameHistroy>
