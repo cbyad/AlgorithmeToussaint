@@ -1,0 +1,53 @@
+<project name="Rapport de recherche Toussaint/Ritter"
+	default="compile" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
+    
+    
+    
+    <target name="default">
+        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+        uri="javafx:com.sun.javafx.tools.ant"
+        classpath="${build}"/>
+    </target>
+
+
+	<property name="src" location="src" />
+	<property name="build" location="build" />
+	<target name="init">
+		<mkdir dir="${build}" />
+	</target>
+    <target name="compile" depends="init">
+        <javac debug="true" srcdir="${src}" excludes="" destdir="${build}"
+            includeantruntime="false" />
+    </target>
+
+
+
+	<target name="view" depends="compile" description="run examples">
+	        <java classname="com.cpa.compute.GraphicView" fork="true"
+	            classpath="${build}">
+	        </java>
+    </target>
+    
+    <target name="test" depends="compile" description="run examples">
+        <touch file="fileOutput.csv" />
+        <java classname="com.cpa.compute.Benchmark"
+            classpath="${build}">
+            <arg value="fileOutput.csv" />
+        </java>
+        
+        
+    </target>
+
+	
+    <target name="clean">
+        <delete verbose="true">
+            <fileset dir="${basedir}" defaultexcludes="no">
+                <include name="**/*~" />
+            </fileset>
+        </delete>
+        <delete dir="${build}" />
+    </target>
+
+
+</project>
+

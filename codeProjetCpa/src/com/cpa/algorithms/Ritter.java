@@ -4,7 +4,11 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 import javafx.scene.shape.Circle;
-
+/**
+ * 
+ * @author cb_mac
+ *Classe implementant l'algorithme de Ritter pour le cercle minimum
+ */
 public class Ritter {
 
 	public static Circle calculCercleMinRitter(ArrayList<Point> points) {
@@ -52,5 +56,4 @@ public class Ritter {
 		}
 		return CERCLE ; // On obtient le cercle de Ritter
 	}
-
 }

@@ -18,11 +18,12 @@
 	</section>
 	<section name="FatJarPackageWizard">
 		<item value="/Users/cb_mac/Desktop/UPMC/SEMESTRE2/CPA/PROJET/AlgorithmeToussaint" key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION"/>
-		<item value="GraphicView - codeProjetCpa" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
-		<item value="/Users/cb_mac/Desktop/algo.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
+		<item value="Benchmark - codeProjetCpa" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
+		<item value="codeProjetCpa/cpa_toussaint_bench.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
 		<item value="false" key="FatJarPackageWizardPage.ANTSCRIPT_SAVE"/>
 		<item value="1" key="FatJarPackageWizardPage.LIBRARY_HANDLING"/>
 		<list key="FatJarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="codeProjetCpa/cpa_toussaint_bench.jar"/>
 			<item value="/Users/cb_mac/Desktop/algo.jar"/>
 		</list>
 		<list key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION_HISTORY">

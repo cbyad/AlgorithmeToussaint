@@ -2,73 +2,16 @@ package com.cpa.algorithms;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
-
 
 import javafx.scene.shape.Line;
 
 /**
  * 
  * @author cb_mac
- *calcul de l'enveloppe convexe
+ *Cette classe s'occupe de toutes les operations necessaires sur le calcul de l'enveloppe convexe
  */
 public class Convex {
-	
-		public static ArrayList<Point> enveloppeConvexeJarvis(ArrayList<Point> points){
-	
-			if (points.size()<3) {
-				return null;
-			}
-	
-			ArrayList<Point> enveloppe = new ArrayList<Point>();
-			Point p = Utils.abscisseMin(points);
-			Point pPrime = new Point(p);
-	
-			for (Point q : points) {
-				if (p.equals(q)) continue;
-				boolean coteBleu=true;
-	
-				for (Point x : points) {
-					if(Utils.crossProduct(p, q, x)<0) coteBleu=false;
-				}
-	
-				if(coteBleu==true) { //On a [PQ] sur l'enveloppe convexe
-	
-					boolean bolBoucle = true;
-					enveloppe.add(p);
-					while(bolBoucle){
-	
-						Point r = points.get(0);
-						double angleMin = Utils.calculAngle(p,q,q,r); //(pq,qr)
-	
-						for (Point rmin : points) {
-							if(!rmin.equals(q) && !rmin.equals(p)){
-								if( Utils.calculAngle(p,q,q,rmin)<angleMin) 
-								{
-									r = rmin;
-									angleMin=Utils.calculAngle(p,q,q,rmin);
-								}
-							}
-						}//On a trouvé R
-						if(r.equals(pPrime)) bolBoucle = false;
-						enveloppe.add(q);
-						//enveloppe.add(r);
-						p=q;
-						q=r;
-						//p=(Point)q.clone();
-						//q=(Point)r.clone();
-						
-					}
-					break;
-				}
-			}
-			return enveloppe ; 
-		}
-	//----------------------------------
+
 
 	public static ArrayList<Point> enveloppeConvexe(ArrayList<Point> points){
 		if (points.size()<4) return points;
@@ -103,12 +46,12 @@ public class Convex {
 			Point b = result.get((i+1)%result.size());
 			Point ref = result.get((i+2)%result.size());
 
-			double signeRef = crossProduct(a,b,a,ref);
+			double signeRef = Utils.crossProduct(a,b,a,ref);
 			double maxValue = 0;
 			Point maxPoint = a;
 
 			for (Point p: points) {
-				double piki = crossProduct(a,b,a,p);
+				double piki = Utils.crossProduct(a,b,a,p);
 				if (signeRef*piki<0 && Math.abs(piki)>maxValue) {
 					maxValue = Math.abs(piki);
 					maxPoint = p;
@@ -128,7 +71,14 @@ public class Convex {
 		return result;
 	}
 
-
+	/**
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param x
+	 * @return vrai si un triangle abc contient le point x , faux sinon
+	 */
 	public static boolean triangleContientPoint(Point a, Point b, Point c, Point x) {
 		double l1 = ((b.y-c.y)*(x.x-c.x)+(c.x-b.x)*(x.y-c.y))/(double)((b.y-c.y)*(a.x-c.x)+(c.x-b.x)*(a.y-c.y));
 		double l2 = ((c.y-a.y)*(x.x-c.x)+(a.x-c.x)*(x.y-c.y))/(double)((b.y-c.y)*(a.x-c.x)+(c.x-b.x)*(a.y-c.y));
@@ -136,11 +86,6 @@ public class Convex {
 		return (0<l1 && l1<1 && 0<l2 && l2<1 && 0<l3 && l3<1);
 	}
 
-
-
-	public static double crossProduct(Point p, Point q, Point s, Point t){
-		return ((q.x-p.x)*(t.y-s.y)-(q.y-p.y)*(t.x-s.x));
-	}
 
 	//-------------
 
@@ -154,11 +99,9 @@ public class Convex {
 		int j = k;
 		while (i<=k && j<n) {
 			while (distance(p.get(j),p.get(i),p.get(i+1))<distance(p.get((j+1)%n),p.get(i),p.get(i+1)) && j<n-1) {
-				//antipodales.add(new Line(p.get(i),p.get(j)));
 				antipodales.add(new Line(p.get(i).x,p.get(i).y,p.get(j).x,p.get(j).y));
 				j++;
 			}
-			//antipodales.add(new Line(p.get(i),p.get(j)));
 			antipodales.add(new Line(p.get(i).x,p.get(i).y,p.get(j).x,p.get(j).y));
 			i++;
 		}
@@ -166,13 +109,12 @@ public class Convex {
 	}
 
 	public static double distance(Point p, Point a, Point b) {
-		return Math.abs(crossProduct(a,b,a,p));
+		return Math.abs(Utils.crossProduct(a,b,a,p));
 	}
-
 
 	//-----------------------------------
 
-	//graham modifi
+	//graham modifie
 	public static ArrayList<Point> graham(ArrayList<Point> points){
 		if (points.size()<4) return points;
 
@@ -181,7 +123,7 @@ public class Convex {
 			Point p = result.get((i-1)%result.size());
 			Point q = result.get(i%result.size());
 			Point r = result.get((i+1)%(result.size()));
-			if (crossProduct(p,q,p,r)>0) {
+			if (Utils.crossProduct(p,q,p,r)>0) {
 				result.remove(i%result.size());
 				if (i==2) i=1;
 				if (i>2) i-=2;
@@ -210,148 +152,4 @@ public class Convex {
 
 		return result;
 	}
-
-
-
-	//--------------------------------super graham avec trie -------------------------------------
-
-	protected static enum Turn { CLOCKWISE, COUNTER_CLOCKWISE, COLLINEAR }
-
-	protected static boolean areAllCollinear(List<Point> points) {
-
-		if(points.size() < 2) {
-			return true;
-		}
-
-		final Point a = points.get(0);
-		final Point b = points.get(1);
-
-		for(int i = 2; i < points.size(); i++) {
-
-			Point c = points.get(i);
-
-			if(getTurn(a, b, c) != Turn.COLLINEAR) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	public static ArrayList<Point> convexHull(ArrayList<Point> points) throws IllegalArgumentException {
-
-		List<Point> sorted = new ArrayList<Point>(getSortedPointSet(points));
-
-		if(sorted.size() < 3) {
-			throw new IllegalArgumentException("can only create a convex hull of 3 or more unique points");
-		}
-
-		if(areAllCollinear(sorted)) {
-			throw new IllegalArgumentException("cannot create a convex hull from collinear points");
-		}
-
-		Stack<Point> stack = new Stack<Point>();
-		stack.push(sorted.get(0));
-		stack.push(sorted.get(1));
-
-		for (int i = 2; i < sorted.size(); i++) {
-
-			Point head = sorted.get(i);
-			Point middle = stack.pop();
-			Point tail = stack.peek();
-
-			Turn turn = getTurn(tail, middle, head);
-
-			switch(turn) {
-			case COUNTER_CLOCKWISE:
-				stack.push(middle);
-				stack.push(head);
-				break;
-			case CLOCKWISE:
-				i--;
-				break;
-			case COLLINEAR:
-				stack.push(head);
-				break;
-			}
-		}
-
-		stack.push(sorted.get(0));
-
-		return new ArrayList<Point>(stack);
-	}
-
-	protected static Point getLowestPoint(ArrayList<Point> points) {
-
-		Point lowest = points.get(0);
-
-		for(int i = 1; i < points.size(); i++) {
-
-			Point temp = points.get(i);
-
-			if(temp.y < lowest.y || (temp.y == lowest.y && temp.x < lowest.x)) {
-				lowest = temp;
-			}
-		}
-
-		return lowest;
-	}
-
-	protected static Set<Point> getSortedPointSet(ArrayList<Point> points) {
-
-		final Point lowest = getLowestPoint(points);
-
-		TreeSet<Point> set = new TreeSet<Point>(new Comparator<Point>() {
-			@Override
-			public int compare(Point a, Point b) {
-
-				if(a.equals(b)|| a==b) {
-					return 0;
-				}
-
-				double thetaA = Math.atan2((long)a.y - lowest.y, (long)a.x - lowest.x);
-				double thetaB = Math.atan2((long)b.y - lowest.y, (long)b.x - lowest.x);
-
-				if(thetaA < thetaB) {
-					return -1;
-				}
-				else if(thetaA > thetaB) {
-					return 1;
-				}
-				else {
-					double distanceA = Math.sqrt((((long)lowest.x - a.x) * ((long)lowest.x - a.x)) +
-							(((long)lowest.y - a.y) * ((long)lowest.y - a.y)));
-					double distanceB = Math.sqrt((((long)lowest.x - b.x) * ((long)lowest.x - b.x)) +
-							(((long)lowest.y - b.y) * ((long)lowest.y - b.y)));
-
-					if(distanceA < distanceB) {
-						return -1;
-					}
-					else {
-						return 1;
-					}
-				}
-			}
-		});
-
-		set.addAll(points);
-
-		return set;
-	}
-
-	protected static Turn getTurn(Point a, Point b, Point c) {
-
-		double crossProduct = Utils.crossProduct(a, b, c);
-
-		if(crossProduct > 0) {
-			return Turn.COUNTER_CLOCKWISE;
-		}
-		else if(crossProduct < 0) {
-			return Turn.CLOCKWISE;
-		}
-		else {
-			return Turn.COLLINEAR;
-		}
-	}
-
 }	  

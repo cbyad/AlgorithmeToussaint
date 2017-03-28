@@ -10,7 +10,6 @@ import com.cpa.algorithms.Utils;
 import com.cpa.algorithms.Ritter;
 import com.cpa.algorithms.Toussaint;
 import com.cpa.tools.LoadInstance;
-import com.cpa.tools.RotatingCalipers;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
@@ -22,102 +21,98 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.stage.Stage;
-
+/**
+ * Classe pour visualiser graphiquement (javafx)
+ * @author cb_mac
+ *
+ */
 public class GraphicView extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
 
-		ArrayList<Point> points = LoadInstance.readFile("samples/test-1070.points"); // points d'entree
+		//passer le fichier a afficher
+		ArrayList<Point> points = LoadInstance.getInstance("samples/test-1018.points");
 
 		Circle cercle =Ritter.calculCercleMinRitter(points);// calcul ritter
 
-		ArrayList<Point> pointConvex = Convex.convexHull(points);
+		ArrayList<Point> pointConvex = Convex.graham(points); // enveloppe convexe
 
-		Point2D.Double[] minimum = RotatingCalipers.getMinimumBoundingRectangle(pointConvex);
+		ArrayList<Line> paireAntiPodales = Convex.calculPairesAntipodales(pointConvex) ;
+
+		Point2D.Double[] minimum = Toussaint.AlgorithmeRectangleMinimun(paireAntiPodales, pointConvex);
 
 		int number = 1;
+
 		List<Point> p = new ArrayList<>();
 
-		for(Point2D.Double corner : minimum) {
-			Point p1= new Point((int)corner.x, (int)corner.y);
+		for(Point2D.Double point : minimum) {
+			Point p1= new Point((int)point.x, (int)point.y);
 			p.add(p1);
-
-			System.out.printf("corner[%d] (%.1f, %.1f)%n", number++, corner.x, corner.y);
+			System.out.printf("Point[%d] (%.1f, %.1f)%n", number++, point.x, point.y);
 		}
 
-		System.out.printf("%narea: %.1f", Utils.rectangleArea(minimum));
 
 		Polygon rec = new Polygon();
 		p.forEach(e ->{rec.getPoints().add((double) e.x);rec.getPoints().add((double)e.y);});
-
-
-		rec.setStroke(Color.RED);
+		rec.setStroke(Color.CHARTREUSE);
+		rec.setFill(Color.CORNFLOWERBLUE);
 		rec.setStrokeLineCap(StrokeLineCap.SQUARE);
 		rec.setStrokeWidth(2);
 
 
-
-		cercle.setFill(Color.CORNFLOWERBLUE);
-		//circle.setFill(Color.WHITE);
+		cercle.setFill(Color.DARKGOLDENROD);
 		cercle.setStroke(Color.BLACK);
 		cercle.setStrokeWidth(2);
 
 
 		Polygon poly  = new Polygon();
-
-		Toussaint t = new Toussaint();
-		ArrayList<Line> ligne = t.toussaint(pointConvex) ;//new Line(45, 55, 100, 200);
-		//System.out.println(ligne.size());
-
-
-
-
-		poly.setFill(Color.BLANCHEDALMOND);
-		poly.setStroke(Color.WHITE);
-		//poly.setStrokeLineCap(StrokeLineCap.SQUARE);
-		poly.setStrokeWidth(1);
-
+		//poly.setFill(Color.BLANCHEDALMOND);
+		poly.setFill(Color.WHITE);
+		poly.setStroke(Color.BLACK);
+		poly.setStrokeWidth(2);
 		pointConvex.forEach(e ->{poly.getPoints().add((double) e.x) ;poly.getPoints().add((double) e.y); });
 
-		System.out.println(poly.getPoints().size());
 		Group root = new Group();
-		root.getChildren().addAll();
 
 		root.getChildren().add(cercle);
-		//root.getChildren().add(rec);
+		root.getChildren().add(rec);
 		root.getChildren().add(poly);
-		root.getChildren().addAll( t.getRectangleMin(ligne, pointConvex));
-		//root.getChildren().addAll(t.toussaint(pointConvex));
-
+		root.getChildren().addAll(Convex.calculPairesAntipodales(pointConvex));
 		root.getChildren().addAll(drawPointOnScreen(points));
+
 		Label circleArea = new Label("Area circle= "+Utils.circleArea(cercle.getRadius()));
 		Label polyArea = new Label("Area polygon= "+Utils.polygonArea(pointConvex));
-
-		Label qualite = new Label("Qualite = "+Utils.quality(pointConvex, cercle));
-
-
-
+		Label recArea = new Label("Area rectangle="+ Utils.rectangleArea(minimum));
+		Label qualiteCP = new Label("Qualite C/P= "+Utils.qualityPoly_circle(pointConvex, cercle));
+		Label qualiteRP = new Label("Qualite R/P= "+Utils.qualityPoly_rectangle(pointConvex, minimum));
 		polyArea.setTranslateY(20);
-		qualite.setTranslateY(40);
+		qualiteCP.setTranslateY(40);
+		recArea.setTranslateY(60);
+		qualiteRP.setTranslateY(80);
 
 		circleArea.setTextFill(Color.WHITE);
 		polyArea.setTextFill(Color.WHITE);
-		qualite.setTextFill(Color.WHITE);
+		recArea.setTextFill(Color.WHITE);
+		qualiteCP.setTextFill(Color.WHITE);
+		qualiteRP.setTextFill(Color.WHITE);
+
 		root.getChildren().add(circleArea);
 		root.getChildren().add(polyArea);
-		root.getChildren().add(qualite);
+		root.getChildren().add(recArea);
+		root.getChildren().add(qualiteCP);
+		root.getChildren().add(qualiteRP);
 
 		Scene scene = new Scene(root);
-		scene.setFill(Color.CADETBLUE);
-		primaryStage.setTitle("---Algorithm Toussaint/Ritter---");
+		scene.setFill(Color.BLACK);
+		//scene.setFill(Color.WHITE);
+		primaryStage.setTitle("---Algorithm Toussaint---");
 		primaryStage.setScene(scene);
 		primaryStage.setHeight(600);
 		primaryStage.setWidth(800);
 		primaryStage.show();
 		primaryStage.setOnCloseRequest(e -> Platform.exit());
 	}
-
 
 	public static void main(String[] args) {
 
@@ -137,8 +132,5 @@ public class GraphicView extends Application {
 		return result ;
 
 	}
-
-
-
 
 }

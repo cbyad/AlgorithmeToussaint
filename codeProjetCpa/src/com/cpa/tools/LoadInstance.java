@@ -2,51 +2,108 @@ package com.cpa.tools;
 
 import java.awt.Point;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
- * 
+ * Cette classe s'occupe de charger les instances depuis le repertoire pour le benchmarcks
  * @author cb_mac
- *Cette classe s'occupe de charger les instances depuis le repertoire pour le benchmarcks
+ *
  */
+
 public class LoadInstance {
 
-	/*
-	 * parse un fichier texte , recupere les coordoonees de point et contruit une instance de point 
+	// L'instance du singleton
+	private static LoadInstance instance;
+
+	// L'index du fichier actuel dans le dossier
+	private int currIndex;
+
+	// Le dossier dans lequel sont situés les fichiers de test.
+	private File directory;
+
+	// Le nom du fichier actuel
+	private String currentFileName;
+
+	private LoadInstance() {
+		directory = new File("samples/");
+		currIndex = 0;
+
+	}
+
+	/**
+	 * Mise en oeuvre du designe pattern singleton
+	 * 
+	 * @return l'instance de la classe.
 	 */
-	public static ArrayList<Point> readFile(String fileName) {
+	public static LoadInstance getInstance() {
+		if (instance == null) {
+			instance = new LoadInstance();
+		}
+		return instance;
+	}
+
+	/**
+	 * Parcours du fichier et renvoie la liste des points 
+	 * 
+	 * @param filename
+	 *            Le nom du fichier a parcourir.
+	 * @return La liste des points correspondante au fichier passé en paramètre.
+	 */
+	public static ArrayList<Point> getInstance(String fileName) {
 		ArrayList<Point> instance = new ArrayList<Point>();
-		
+
 		try {
-			
+
 			InputStream flux = new FileInputStream(fileName);
 			InputStreamReader lecture = new InputStreamReader(flux);
 			BufferedReader buff = new BufferedReader(lecture);
-			
+
 			String ligne ;
 			while ((ligne=buff.readLine())!=null ) {
-				
 				String[] tmp = ligne.split(" ");
 				int x = Integer.parseInt(tmp[0]);
 				int y = Integer.parseInt(tmp[1]);
 				instance.add(new Point(x, y));
 			}
 			buff.close();
-			
+
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Input file error! ");
 		}
-		
+
 		return instance ;
 	}
-	
 
-	public static void main(String[] args) {
-		String file = args[0];
-		System.out.println(LoadInstance.readFile(file).size());
+
+	/**
+	 * @return la liste des points du prochain fichier dans le dossier
+	 */
+	public ArrayList<Point> getNextFile() {
+		currIndex = (currIndex + 1);
+		if (currIndex >= directory.listFiles().length)
+			return null;
+		while (!(directory.listFiles()[currIndex].isFile())) {
+			currIndex = (currIndex + 1);
+			if (currIndex >= directory.listFiles().length)
+				return null;
+		}
+		currentFileName = directory.listFiles()[currIndex].getName();
+		return getInstance("samples/"
+				+ directory.listFiles()[currIndex].getName());
 	}
-	
+
+	/**
+	 * @return le nom du fichier courrant dans le parcours du dossier
+	 */
+	public String getCurrentFileName() {
+		return currentFileName;
+	}
+
 }

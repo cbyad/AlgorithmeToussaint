@@ -1,144 +1,189 @@
 package com.cpa.algorithms;
 
 import java.awt.Point;
-import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-
+/**
+ * Classe implementant l'algorithme Toussaint resolvant le probleme du rectangle minimum
+ * 
+ * @author cb_mac
+ *
+ */
 public class Toussaint {
 
+	/**
+	 * 
+	 * @param paireAntiPodales
+	 * @param enveloppeConvexe
+	 * @return les 4 points qui forment le rectangle minimum
+	 */
+	public static Point2D.Double[]  AlgorithmeRectangleMinimun (ArrayList<Line> paireAntiPodales,
+			ArrayList<Point> enveloppeConvexe){
 
-	public  ArrayList<Line>  toussaint (ArrayList<Point> points ){
+		Double rectangleMinArea = Double.MAX_VALUE;	//initialiser le rectangle min a l'aire maximale
+		Point2D.Double[] rectangleMinimum= new Point2D.Double[4];
+		Point2D.Double[] rectTemp= new Point2D.Double[4];
+		
+		//On parcourt la liste des points qui forme des paires antidopales
+		for (Point p : getPointsFromLine(paireAntiPodales)) {
+			
+			// on recupere le suivant de p dans l'enveloppe
+			Point p_next = enveloppeConvexe.get((enveloppeConvexe.indexOf(p) + 1 )%enveloppeConvexe.size());
 
-		ArrayList<Point> enlevoppe = Convex.enveloppeConvexe(points);
-
-		ArrayList<Line> line = Convex.calculPairesAntipodales(enlevoppe);
-
-		return Convex.calculPairesAntipodales(enlevoppe);
-
-
-	}
-
-
-	public 	ArrayList<Line>  getRectangleMin (ArrayList<Line> pointsAntiPodal, ArrayList<Point> enveloppe){
-		//Point p1Suiv =enveloppe.get(enveloppe.indexOf(p1)%enveloppe.size());
-		ArrayList<Line> result = new ArrayList<>();
-
-		for (Point p : enveloppe)
-			System.out.println(p);
-
-		for (Point p : getPointsFromLine(pointsAntiPodal)) {
-
-			Point p1Suiv = enveloppe.get((enveloppe.indexOf(p) + 1 )%enveloppe.size());
-
-			double a = (1.0*(p1Suiv.y-p.y))/(p1Suiv.x-p.x);
+			//coeff directeur et ordonne de la droite (pp_next)
+			double a = (1.0*(p_next.y-p.y))/(p_next.x-p.x); 
 			double b = p.y- (a*p.x);
 
-//						result.add(new Line(p.x, p.y, p1Suiv.x, p1Suiv.y));
-//						result.add(new Line(p.x,p.y,100,a*100+b));
-			double newB, bestB = Integer.MAX_VALUE;
-			Point bestP = null;
-			ArrayList<Point> pairesCommunes = pointsAntiPodalCommun(p, pointsAntiPodal);
-			for (Point pAntiPod : pairesCommunes) {
-				newB = pAntiPod.y - (a * pAntiPod.x);
-				if (newB > b) {
-					if (bestB == Integer.MAX_VALUE || newB > bestB) {
-						bestB = newB;
-						bestP = pAntiPod;
+			double b_new=0.0;
+			double b_best = Integer.MAX_VALUE;
+			Point p_ok = new Point();
+			ArrayList<Point> pairesCommunes = pointsAntiPodalesCommuns(p, paireAntiPodales);
+			
+			//on parcourt la liste des points avec qui p forme une paire antipodale
+			for (Point t : pairesCommunes) {
+				//la droite passant par t est // a (pp_next) donc ils ont le meme coeff a
+				b_new = t.y - (a * t.x);
+				
+				if (b_new > b) {
+					if (b_best == Integer.MAX_VALUE || b_new > b_best) {
+						b_best = b_new;
+						p_ok = t;
 					}
 				} else {
-					if (bestB > newB) {
-						bestB = newB;
-						bestP = pAntiPod;
+					if (b_best > b_new) {
+						b_best = b_new;
+						p_ok = t;
 					}
 				}
 			}
-			double BGauche = Double.MAX_VALUE, Bdroite = Double.MIN_VALUE;
-			Point pGauche = null;
-			Point pDroit = null;
-			double Btemp;
-			
-			for(Point pt: enveloppe ){
-					Btemp = pt.y - ( (-1 / a) * pt.x );
-					
-					if (Btemp> Bdroite)	{
-					Bdroite= Btemp ;
-					pDroit=pt ;
-					}		
-					
-					if(Btemp<BGauche){
-						BGauche=Btemp;
-						pGauche=pt;
-					}
-					
+			//recherche des deux autres droites perpendiculaires 
+			//aux deux premieres passant par les point p_ext1 et p_ext2
+
+			double b_ext1 = Double.MAX_VALUE,b_ext2 = Double.MIN_VALUE;
+			Point p_ext1 = new Point();
+			Point p_ext2 = new Point();
+			double b_temp;
+
+			for(Point pt: enveloppeConvexe ){
+				b_temp = pt.y - ( (-1 / a) * pt.x );
+
+				if (b_temp> b_ext2)	{
+					b_ext2= b_temp ;
+					p_ext2=pt ;
+				}		
+
+				if(b_temp<b_ext1){
+					b_ext1=b_temp;
+					p_ext1=pt;
+				}	
 			}
+
+			Line deltaAB , deltaCD ,deltaBD ,deltaAC ;
+
+			//    		(deltaAB // deltaCD)
+			deltaAB = new Line(p.x,p.y,100,a*100+b) ;
+			deltaCD = new Line(p_ok.x,p_ok.y,100,a*100+b_best);
+
+			//		    (deltaBD // deltaAC)
+			deltaBD=new Line(p_ext1.x,p_ext1.y,100,(-1/a)*100+b_ext1);
+			deltaAC=new Line(p_ext2.x,p_ext2.y,100,(-1/a)*100+b_ext2);
+
+			//calcul des 4 points d'intersections 
+			double xA = (getOrderedO(deltaAC)-getOrderedO(deltaAB)) / (getCoefficientDirect(deltaAB)-getCoefficientDirect(deltaAC)) ;
+			double yA= getCoefficientDirect(deltaAC)*xA + getOrderedO(deltaAC);
+			Point2D.Double A = new Point2D.Double(xA, yA);
+
+			double xB = (getOrderedO(deltaBD)-getOrderedO(deltaAB)) / (getCoefficientDirect(deltaAB)-getCoefficientDirect(deltaBD)) ;
+			double yB= getCoefficientDirect(deltaBD)*xB + getOrderedO(deltaBD);
+			Point2D.Double B = new Point2D.Double(xB, yB);
+
+			double xC = (getOrderedO(deltaAC)-getOrderedO(deltaCD)) / (getCoefficientDirect(deltaCD)-getCoefficientDirect(deltaAC)) ;
+			double yC= getCoefficientDirect(deltaAC)*xC + getOrderedO(deltaAC);
+			Point2D.Double C = new Point2D.Double(xC, yC);
+
+			double xD = (getOrderedO(deltaBD)-getOrderedO(deltaCD)) / (getCoefficientDirect(deltaCD)-getCoefficientDirect(deltaBD)) ;
+			double yD= getCoefficientDirect(deltaBD)*xD + getOrderedO(deltaBD);
+			Point2D.Double D = new Point2D.Double(xD, yD);
 			
+			//On affecte les points dans le tableau temporaire de points du rectangle
+			rectTemp[0] = A;
+			rectTemp[1] = B;
+			rectTemp[2] = D;
+			rectTemp[3] = C;
 			
-			result.add(new Line(p.x,p.y,100,a*100+b));
-		//	result.add(new Line(p.x,(-1/a)*p.x,100,(-1/a)*100));
-			
-			System.out.println(bestP);
-			result.add(new Line(bestP.x,bestP.y,100,a*100+bestB));
-			
-//			Line rotate = new Line(p.x,p.y,100,a*100+b);
-//			rotate.setRotate(90);
-//			result.add(rotate);
-//			System.out.println(result);
-			
-			result.add(new Line(pGauche.x,pGauche.y,100,(-1/a)*100+BGauche));
-			result.add(new Line(pDroit.x,pDroit.y,100,(-1/a)*100+Bdroite));
-			
-			
-			return result;
+			//On testes si l'aire du rectangle temporaire est inferieur a l'aire du rectangle minimum
+			if(Utils.rectangleArea(rectTemp)<rectangleMinArea){	
+				rectangleMinArea= Utils.rectangleArea(rectTemp) ;
+				for(int i=0 ;i<rectTemp.length;i++){
+					rectangleMinimum[i]=rectTemp[i];
+				}	
+			}
+			//ici on a les rectangles intermediaires
 		}
-
-			return result ;
-
+		
+		return rectangleMinimum ;
 	}
 
-	public ArrayList<Point> pointsAntiPodalCommun(Point p1 , ArrayList<Line> antipodales){
+	/**
+	 * 
+	 * @param p
+	 * @param antipodales
+	 * @return la liste des points avec qui p forme une paire antipodale
+	 */
+	public static ArrayList<Point> pointsAntiPodalesCommuns(Point p , ArrayList<Line> paireAntipodales){
+
 		ArrayList<Point> listePoints =  new ArrayList<>();
-		ArrayList<Point> pairePodale = getPointsFromLine(antipodales);
+		ArrayList<Point> paireP = getPointsFromLine(paireAntipodales);
 
-		for (int i = 0 ; i < pairePodale.size() ; i += 2) { // l (x1,x2,y1,y2)
+		for (int i = 0 ; i < paireP.size() ; i =i+2) {
 
-			if(p1.equals(pairePodale.get(i))){
-				listePoints.add(pairePodale.get(i + 1));
+			if(p.equals(paireP.get(i))){
+				listePoints.add(paireP.get(i + 1));
 			}
-			else if (p1.equals(pairePodale.get(i + 1))){
-				listePoints.add(pairePodale.get(i));
+			else if (p.equals(paireP.get(i + 1))){
+				listePoints.add(paireP.get(i));
 			}
 		}
-
 		return listePoints ;
 	}
 
-
-
-
-	public ArrayList<Point> getPointsFromLine(ArrayList<Line> line ){
-		ArrayList<Point> listePoints =  new ArrayList<>();
+	/**
+	 * 
+	 * @param line
+	 * @return la liste de points contenue dans une liste de line(AB)
+	 */
+	public static ArrayList<Point> getPointsFromLine(ArrayList<Line> line ){
+		ArrayList<Point> Points =  new ArrayList<>();
 
 		for (Line l : line) {
-			double x1 = l.getStartX();
+			double x1 =l.getStartX();
 			double y1= l.getStartY();
-			double x2 = l.getEndX();
+			double x2 =l.getEndX();
 			double y2= l.getEndY();
 
-			listePoints.add(new Point((int)x1,(int) y1) );
-			listePoints.add(new Point((int)x2,(int)y2) );
+			Points.add(new Point((int)x1,(int) y1) );
+			Points.add(new Point((int)x2,(int)y2) );
 		}
-		return listePoints ;
-
+		return Points ;
 	}
 
-	public double getCoeff(Line l){
-		
+	/**
+	 * 
+	 * @param l
+	 * @return le coefficient directeur d'une droite
+	 */
+	public static  double getCoefficientDirect(Line l){
 		return (1.0*(l.getStartY()-l.getEndY()))/(l.getStartX()-l.getEndX());
-		
+	}
+
+	/**
+	 * 
+	 * @param l
+	 * @return l'ordonnee a l'origine d'une droite
+	 */
+	public  static double getOrderedO(Line l){
+		return   l.getStartY()- (getCoefficientDirect(l)*l.getStartX());
 	}
 
 }
